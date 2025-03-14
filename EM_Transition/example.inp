@@ -1,0 +1,21 @@
+# ============================ Introduction ================================ #
+# Input file for EM transition strengths calculation.
+# All energies are in MeV
+# All times in ps.
+# Allowed Mutipolarity: E1-E6, M1-M4.
+# Er = gamma-ray energy.
+# br = gamma-ray branching ratio, 
+#      which should include the corrections for the decay to other states, 
+#      the internal conversion coefficient 
+#      and the mixing ratio.
+# Ei = initial state energy.
+# t1/2 = initial state half-life (half-life!!!! NOT lifetime!!!!)
+# Ji = initial state spin.
+# Ef = final state energy.
+# Jf = final state spin.
+# ========================================================================== #
+
+
+
+#Mult     Er     br     Ei     t1/2     Ji     Ef     Jf
+E2        0.125  1      0.125  919.2    2      0      0
