@@ -22,5 +22,5 @@ $`
 \boldsymbol{B(i \to f) = \frac{\left| \langle J_f || \mathcal{O} (\pi \lambda) || J_i \rangle \right|^2}{(2J_i + 1)}.}
 `$
 - **Input:** B(E/M), J$`_i`$.
-- **Output:** ME = $`\left| \langle J_f || \mathcal{O} (\pi \lambda) || J_i \rangle \right|^2`$
+- **Output:** ME = $`\left| \langle J_f || \mathcal{O} (\pi \lambda) || J_i \rangle \right|`$
 
