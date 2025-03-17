@@ -31,6 +31,25 @@ Convert transition strengths(B) between units.
 
 ### BWu.py
 Calculation for B(E/M) in W.u. and estimate the single particle half-life.
+
+The single-particle half-life for electric transitions:
+
+$`
+t_{1/2}(\gamma)(EL)_{SP} = \frac{\ln 2 \cdot L \cdot [(2L + 1)!!]^2 \hbar}
+{2(L + 1)e^2 R^{2L}} 
+\left( \frac{3 + L}{3} \right)^2 
+\left( \frac{\hbar c}{E_{\gamma}} \right)^{2L+1}
+`$
+
+The single-particle half-life for magnetic transitions:
+
+$`
+t_{1/2}(\gamma)(ML)_{SP} = \frac{\ln 2 \cdot L \cdot [(2L + 1)!!]^2 \hbar}
+{80(L + 1) \mu_N^2 R^{2L-2}} 
+\left( \frac{3 + L}{3} \right)^2 
+\left( \frac{\hbar c}{E_{\gamma}} \right)^{2L+1}
+`$
+
 - **Input:** E$`_{\gamma}`$, A and t$`_{1/2}`$.
 - **Output:** B(E/M) in W.u., tsp in ps. 
 
