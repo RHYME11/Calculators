@@ -33,7 +33,6 @@ def transition_strength(transition_type, E_gamma, T, b):
 
 #=========== Input ============#
 valid_transitions = {"E1", "E2", "E3", "E4", "E5", "E6", "M1", "M2", "M3", "M4"}
-valid_transitions = {"E1", "E2", "E3", "E4", "E5", "E6", "M1", "M2", "M3", "M4"}
 
 # Validate transition type
 while True:
@@ -87,10 +86,10 @@ units = {
   "E4": "e²fm⁸",
   "E5": "e²fm¹⁰",
   "E6": "e²fm¹²",
-  "M1": "μN²fm²",
+  "M1": "μN²",
   "M2": "μN²fm²",
   "M3": "μN²fm⁴",
-  "M4": "μN²fm⁶"
+  "M4": "μN²fm⁶",
 }
 formatted_result = f"B({transition}) = {round(result, 4)} {units[transition]}"
 print(formatted_result)

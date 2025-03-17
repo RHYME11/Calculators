@@ -24,6 +24,12 @@ $`
 - **Input:** B(E/M), J$`_i`$.
 - **Output:** ME = $`\left| \langle J_f || \mathcal{O} (\pi \lambda) || J_i \rangle \right|`$
 
+### B_unit_conv.py:
+Convert transition strengths(B) between units.
+- **Input:** mass number(A), B(E/M).
+ - **Output:**  B(E/M).
+
+
 TODO:
 ### Batch_EM.py
 Batch process on multipole EM transitions for all calculations at once, including B(E/M) in 2 units, reversed B(E/M) in 2 units, matrix elements.
