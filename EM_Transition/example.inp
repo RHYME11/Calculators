@@ -2,20 +2,27 @@
 # Input file for EM transition strengths calculation.
 # All energies are in MeV
 # All times in ps.
-# Allowed Mutipolarity: E1-E6, M1-M4.
+# The first 4 columns are required.
+# Allowed Mutipolarity: E1-E5, M1-M4.
+# A = mass number.
 # Er = gamma-ray energy.
-# br = gamma-ray branching ratio, 
-#      which should include the corrections for the decay to other states, 
-#      the internal conversion coefficient 
-#      and the mixing ratio.
-# Ei = initial state energy.
 # t1/2 = initial state half-life (half-life!!!! NOT lifetime!!!!)
-# Ji = initial state spin.
-# Ef = final state energy.
-# Jf = final state spin.
+# br(optional) = gamma-ray branching ratio (if empty, br = 1), 
+#                which should include the corrections for the decay to other states, 
+#                the internal conversion coefficient 
+#                and the mixing ratio.
+# Ei(optional) = initial state energy.
+# Ji(optional) = initial state spin.
+# Ef(optional) = final state energy.
+# Jf(optional) = final state spin.
+# BEM(optional) = B in unit, like e2fm2
+# BWu(optional) = B in W.u.
+# Default empty input as -1. 
+# example below is 1st excitation in 22Ne and 20Ne.
 # ========================================================================== #
 
 
 
-#Mult     Er     br     Ei     t1/2     Ji     Ef     Jf
-E2        0.125  1      0.125  919.2    2      0      0
+#A     Mult     Er     t1/2     br     Ei     Ji     Ef     Jf     BEM     BWu     
+22     E2       1.274  3.6      1      1.274  2      0      0      -1      -1         
+20     E2       1.633  0.73     1      -1     2                     

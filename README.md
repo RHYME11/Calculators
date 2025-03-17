@@ -53,8 +53,43 @@ t_{1/2}(\gamma)(ML)_{SP} = \frac{\ln 2 \cdot L \cdot [(2L + 1)!!]^2 \hbar}
 - **Input:** E$`_{\gamma}`$, A and t$`_{1/2}`$.
 - **Output:** B(E/M) in W.u., tsp in ps. 
 
-TODO:
-### Batch_EM.py
+
+### EMBatch.py
 Batch process on multipole EM transitions for all calculations at once, including B(E/M) in 2 units, reversed B(E/M) in 2 units, matrix elements.
-- **Input:** input file (ref example.inp)
-- **Output:** output file (ref example.out).
+- **Input:** check `example.inp`
+- **Output:** check `example.out`
+
+|        | Input/Output   | Unit      | Notes                                                                                                                                                                 |
+|--------|----------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A      | Input Required |           | mass number                                                                                                                                                           |
+| Mult   | Input Required |           | Allow: E1-E5, M1-M4                                                                                                                                                   |
+| Er     | Input Required | MeV       | Gamma Energy                                                                                                                                                          |
+| t1/2   | Input Required | ps        | Half-life of initial state. Not lifetime!!! Full half-life!!! (you can set it to partial half-life, and set br = 1 later.)                                            |
+| br     | Input Optional |           | br = (0,1].  Default br = 1.                                                                                                                                          |
+| Ei     | Input Optional | MeV       | E.x. of initial state, which should include the corrections for the decay to other states, the internal conversion coefficient and the mixing ratio. Default Ei = -1. |
+| Ji     | Input Optional |           | Spin of initial state. Default Ji = -1.                                                                                                                               |
+| Ef     | Input Optional | MeV       | E.x. of final state. Default Ef = -1.                                                                                                                                 |
+| Jf     | Input Optional |           | Spin of final state. Default Jf = -1.                                                                                                                                 |
+| BEM    | Input Optional | eg, e2fm2 | Transition strength.                                                                                                                                                  |
+| BWu    | Input Optional | W.u.      | Weisskopf Estimation                                                                                                                                                  |
+| ME     | Output         | eg, efm   | Matrix Element. Require: Ji >= 0.                                                                                                                                     |
+| tsp    | Output         | ps        | Weisskopf Estimation Single-particle half-life (partial)..                                                                                                            |
+| BEM(↑) | Output         | eg, e2fm2 | Transition strength. De-excitation. Require: Ji >= 0 && Jf <= 0                                                                                                       |
+| BWu(↑) | Output         | W.u.      | Weisskopf Estimation De-excitation. Require:Ji >= 0 && Jf <= 0                                                                                                        |
+
+#### ⚠ Important Input Formatting Warning ⚠
+
+When providing input values, **do not leave any empty spaces between true input values**. All columns before a valid input must be explicitly filled.  
+
+✅ **Correct Example:**  
+| #A  | Mult | Er   | t1/2 | br | Ei    | Ji  | Ef | Jf | BEM | BWu |
+|-----|------|------|------|----|-------|----|----|----|----|----|
+| 22  | E2   | 1.274 | 3.6  | 1  | 1.274 | 2  | 0  | 0  | -1  | -1  |
+
+❌ **Incorrect Example (missing Ei value):**  
+| #A  | Mult | Er   | t1/2 | br | Ei | Ji | Ef | Jf | BEM | BWu |
+|-----|------|------|------|----|----|----|----|----|----|----|
+| 20  | E2   | 1.633 | 0.73 | 1  | -  | 2  | -  | -  | -1  | -1  |
+
+Leaving any blank space before a true input value can cause errors in processing the data.
+
