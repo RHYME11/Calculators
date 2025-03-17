@@ -27,8 +27,12 @@ $`
 ### B_unit_conv.py:
 Convert transition strengths(B) between units.
 - **Input:** mass number(A), B(E/M).
- - **Output:**  B(E/M).
+- **Output:**  B(E/M).
 
+### BWu.py
+Calculation for B(E/M) in W.u. and estimate the single particle half-life.
+- **Input:** E$`_{\gamma}`$, A and t$`_{1/2}`$.
+- **Output:** B(E/M) in W.u., tsp in ps. 
 
 TODO:
 ### Batch_EM.py
