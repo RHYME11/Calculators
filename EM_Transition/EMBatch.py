@@ -31,7 +31,7 @@ def parse_line(line, line_number):
       sys.exit(1)
     Er = check_positive(float(parts[2]), line_number, "Er")
     
-    if len(parts) > 3 and parts[3] !="":
+    if len(parts) > 3 and parts[3] !="" and float(parts[3]) !=-1:
       hl = check_positive(float(parts[3]), line_number, "t1/2")
     else:
       hl = -1.0
@@ -216,9 +216,11 @@ def write_to_file(data_mat, input_file):
     file.write("# ME(↑) = matrix element for de-excitation.\n")
     file.write("# ========================================================================== #\n\n\n")
     
+    header_format = "{:<7} {:<8} {:<10} {:<10} {:<8} {:<10} {:<6} {:<6} {:<6} {:<12} {:<12} {:<12} {:<12} {:<12} {:<12} {:<12}\n"
+
+    row_format = "{:<7} {:<8} {:<10.4f} {:<10.4f} {:<8.4f} {:<10.4f} {:<6} {:<6} {:<6} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f}\n"
     
-    header_format = "{:<5} {:<6} {:<8} {:<8} {:<6} {:<8} {:<6} {:<6} {:<6} {:<8} {:<8} {:<8} {:<8} {:<8} {:<8} {:<8}\n"
-    row_format = "{:<5} {:<6} {:<8.4f} {:<8.4f} {:<6.4f} {:<8.4f} {:<6} {:<6} {:<6} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f}\n"
+
     file.write(header_format.format(
       "#A", "Mult", "Er", "t1/2", "br", "Ei", "Ji", "Ef", "Jf",
       "BEM", "BWu", "ME", "tsp", "BEM(↑)", "BWu(↑)", "ME(↑)"
