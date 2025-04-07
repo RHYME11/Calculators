@@ -1,6 +1,6 @@
 # ============================ Introduction ================================ #
 # Input file for EM transition strengths calculation.
-# All energies are in MeV
+# All energies are in MeV.
 # All times in ps.
 # The first 4 columns are required.
 # Allowed Mutipolarity: E1-E5, M1-M4.

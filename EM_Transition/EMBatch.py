@@ -127,6 +127,15 @@ def ME(values):
   else:
     return -1
 
+# Element#14: MEdex (matrix element) for de-excitation Calculation
+def MEdex(values):
+  BWu = values[13]
+  Jf = values[8]
+  if BWu > 0 and Jf >=0:
+    return (BWu*(2*Jf+1))**0.5
+  else:
+    return -1
+
 # Element#13: BEM for de-excitation Calculation
 def BEM_dex(values):
   BEM = values[9]
@@ -176,19 +185,20 @@ def write_to_file(data_mat, input_file):
     file.write("# tsp = single particle half-life in ps by Weisskopf estimation.\n")
     file.write("# BEM(↑) = B in unit e2fm2 for de-excitation.\n")
     file.write("# BWu(↑) = B in W.u. for de-excitation.\n")
+    file.write("# ME(↑) = matrix element for de-excitation.\n")
     file.write("# ========================================================================== #\n\n\n")
     
     
-    header_format = "{:<5} {:<6} {:<8} {:<8} {:<6} {:<8} {:<6} {:<6} {:<6} {:<8} {:<8} {:<8} {:<8} {:<8} {:<8}\n"
-    row_format = "{:<5} {:<6} {:<8.4f} {:<8.4f} {:<6.4f} {:<8.4f} {:<6} {:<6} {:<6} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f}\n"
+    header_format = "{:<5} {:<6} {:<8} {:<8} {:<6} {:<8} {:<6} {:<6} {:<6} {:<8} {:<8} {:<8} {:<8} {:<8} {:<8} {:<8}\n"
+    row_format = "{:<5} {:<6} {:<8.4f} {:<8.4f} {:<6.4f} {:<8.4f} {:<6} {:<6} {:<6} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f} {:<8.4f}\n"
     file.write(header_format.format(
       "#A", "Mult", "Er", "t1/2", "br", "Ei", "Ji", "Ef", "Jf",
-      "BEM", "BWu", "ME", "tsp", "BEM(↑)", "BWu(↑)"
+      "BEM", "BWu", "ME", "tsp", "BEM(↑)", "BWu(↑)", "ME(↑)"
     ))
     for row in data_mat:
       file.write(row_format.format(
         int(row[0]), row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8],
-        row[9], row[10], row[11], row[12], row[13], row[14]
+        row[9], row[10], row[11], row[12], row[13], row[14], row[15]
       ))
 
   print(f"Data written to '{output_file}' successfully!")
@@ -211,6 +221,7 @@ def main():
     row.append(sphl(row))
     row.append(BEM_dex(row))   
     row.append(BWu_dex(row))   
+    row.append(MEdex(row))   
   
   write_to_file(data_mat,input_file)
 

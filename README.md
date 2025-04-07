@@ -93,3 +93,6 @@ When providing input values, **do not leave any empty spaces between true input 
 
 Leaving any blank space before a true input value can cause errors in processing the data.
 
+#### TODO
+Make t1/2 as optional. Sometimes people just need unit convert. t1/2 is not necessary.
+
