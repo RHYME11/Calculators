@@ -4,6 +4,8 @@ import sys
 import readline
 import glob
 import math
+from B_unit_conv import conv_coeff
+
 
 # Valid positive number
 def check_positive(value, line_number, column_name):
@@ -17,8 +19,8 @@ def check_positive(value, line_number, column_name):
 # Read each line:
 def parse_line(line, line_number):
   parts = line.split()
-  if len(parts) < 4:
-    print("Miss information. A, Mult, Er and t1/2 are necessary.")
+  if len(parts) < 3:
+    print("Miss information. A, Mult and Er are necessary.")
     sys.exit(1)
   try:
     A = check_positive(int(parts[0]), line_number, "A")
@@ -29,7 +31,11 @@ def parse_line(line, line_number):
       sys.exit(1)
     Er = check_positive(float(parts[2]), line_number, "Er")
     
-    hl = check_positive(float(parts[3]), line_number, "t1/2")
+    if len(parts) > 3 and parts[3] !="":
+      hl = check_positive(float(parts[3]), line_number, "t1/2")
+    else:
+      hl = -1.0
+
     if len(parts) > 4 and parts[4] !="":
       br = check_positive(float(parts[4]), line_number, "br")
       if not (0< br <= 1):
@@ -39,6 +45,14 @@ def parse_line(line, line_number):
       br = 1 # default br = 1  
  
     optional_fields = [float(parts[i]) if i < len(parts) else -1.0 for i in range(5, 11)] 
+    
+    # one of t1/2, BEM, BWu must exist
+    BEM = optional_fields[4]
+    BWu = optional_fields[5]
+    if hl<0 and BEM<0 and BWu<0:
+      print(f"Missing transition info (t1/2, BEM, BWu) in row {line_number}\n")
+      sys.exit(1)
+
     return [A, Mult, Er, hl, br] + optional_fields[:6]  
   
   except ValueError:
@@ -60,28 +74,59 @@ def ReadFile(input_file):
 
 #========================================== Calculation Formulas ======================================#
 # Element#9: BEM Calculation
+# 1st: BEM exists, keep the original value
+# 2nd: BWu exists, calculate BEM based on BWu first
+# Last: if neither BEM or BWu is known, calculate BEM based on Er, t1/2 and br.
 def BEM(values):
-  if values[9] > 0:
+  if values[9] > 0: # values[9] = BEM
     return values[9]
-  
-  transition_type = values[1]
-  E_gamma = values[2]
-  Tp = values[3]/values[4] # Tp = T/br
-  # Define the formulas with time unit adjusted to ps
-  formulas = {
-    "E1": lambda E, Tp: 0.435 / (E**3 * Tp) * 1e-3,  # ps conversion from fs
-    "E2": lambda E, Tp: 564 / (E**5 * Tp) * 1,       # ps conversion from ps
-    "E3": lambda E, Tp: 1212 / (E**7 * Tp) * 1e3,    # ps conversion from μs
-    "E4": lambda E, Tp: 4076 / (E**9 * Tp) * 1e12,   # ps conversion from s
-    "E5": lambda E, Tp: (2.00 * 10**10) / (E**11 * Tp) * 1e12,  # ps conversion from s
-    "E6": lambda E, Tp: (1.35 * 10**17) / (E**13 * Tp) * 1e12,  # ps conversion from s
-    "M1": lambda E, Tp: 39.4 / (E**3 * Tp) * 1e-3,   # ps conversion from ps
-    "M2": lambda E, Tp: 51.2 / (E**5 * Tp) * 1e3,    # ps conversion from ns
-    "M3": lambda E, Tp: 0.110 / (E**7 * Tp) * 1e12,   # ps conversion from s
-    "M4": lambda E, Tp: (0.370 * 10**6) / (E**9 * Tp) * 1e12,  # ps conversion from s
-  }
-   
-  return formulas[transition_type](E_gamma, Tp)
+  elif values[10] > 0: # values[10] = BWu
+    coeff = conv_coeff(values[1], values[0])
+    coeff = 1./coeff # 1/coeff: convert Wu to e2fm2 
+    return values[10]/coeff 
+  else:
+    transition_type = values[1]
+    E_gamma = values[2]
+    Tp = values[3]/values[4] # Tp = T/br
+    # Define the formulas with time unit adjusted to ps
+    formulas = {
+      "E1": lambda E, Tp: 0.435 / (E**3 * Tp) * 1e-3,  # ps conversion from fs
+      "E2": lambda E, Tp: 564 / (E**5 * Tp) * 1,       # ps conversion from ps
+      "E3": lambda E, Tp: 1212 / (E**7 * Tp) * 1e3,    # ps conversion from μs
+      "E4": lambda E, Tp: 4076 / (E**9 * Tp) * 1e12,   # ps conversion from s
+      "E5": lambda E, Tp: (2.00 * 10**10) / (E**11 * Tp) * 1e12,  # ps conversion from s
+      "E6": lambda E, Tp: (1.35 * 10**17) / (E**13 * Tp) * 1e12,  # ps conversion from s
+      "M1": lambda E, Tp: 39.4 / (E**3 * Tp) * 1e-3,   # ps conversion from ps
+      "M2": lambda E, Tp: 51.2 / (E**5 * Tp) * 1e3,    # ps conversion from ns
+      "M3": lambda E, Tp: 0.110 / (E**7 * Tp) * 1e12,   # ps conversion from s
+      "M4": lambda E, Tp: (0.370 * 10**6) / (E**9 * Tp) * 1e12,  # ps conversion from s
+    }
+     
+    return formulas[transition_type](E_gamma, Tp)
+
+# Element#10: BWu Calculation
+# 1st: BWu exists, keep the original value
+# 2nd: BEM exists, calculate BWu based on BEM first
+# Last: if neither BEM or BWu is known, calculate BEM based on Er, t1/2 and br.
+def BWu(values):
+  if values[10] > 0:
+    return values[10]
+  elif values[9] > 0:
+    coeff = conv_coeff(values[1], values[0])
+    return values[9]/coeff
+  else:
+    Tp = values[3] / values[4] # Tp = T/br
+    tsp = sphl(values)
+    return tsp/Tp
+
+# Element#11: ME (matrix element) Calculation
+def ME(values):
+  BWu = values[9]
+  Ji = values[6]
+  if BWu > 0 and Ji >=0:
+    return (BWu*(2*Ji+1))**0.5
+  else:
+    return -1
 
 # Element#12: tsp Calculation
 def sphl(values): # in unit ps^-1
@@ -109,23 +154,6 @@ def sphl(values): # in unit ps^-1
  
  
   return tsp*1e12 # unit in ps;
-
-# Element#10: BWu Calculation
-def BWu(values):
-  if values[10] > 0:
-    return values[10]
-  Tp = values[3] / values[4] # Tp = T/br
-  tsp = sphl(values)
-  return tsp/Tp
-
-# Element#11: ME (matrix element) Calculation
-def ME(values):
-  BWu = values[9]
-  Ji = values[6]
-  if BWu > 0 and Ji >=0:
-    return (BWu*(2*Ji+1))**0.5
-  else:
-    return -1
 
 # Element#14: MEdex (matrix element) for de-excitation Calculation
 def MEdex(values):

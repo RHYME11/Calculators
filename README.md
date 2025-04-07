@@ -64,7 +64,7 @@ Batch process on multipole EM transitions for all calculations at once, includin
 | A      | Input Required |           | mass number                                                                                                                                                           |
 | Mult   | Input Required |           | Allow: E1-E5, M1-M4                                                                                                                                                   |
 | Er     | Input Required | MeV       | Gamma Energy                                                                                                                                                          |
-| t1/2   | Input Required | ps        | Half-life of initial state. Not lifetime!!! Full half-life!!! (you can set it to partial half-life, and set br = 1 later.)                                            |
+| t1/2   | Input Optional | ps        | Half-life of initial state. Not lifetime!!! Full half-life!!! (you can set it to partial half-life, and set br = 1 later.). Default t1/2 = -1.                        |
 | br     | Input Optional |           | br = (0,1].  Default br = 1.                                                                                                                                          |
 | Ei     | Input Optional | MeV       | E.x. of initial state, which should include the corrections for the decay to other states, the internal conversion coefficient and the mixing ratio. Default Ei = -1. |
 | Ji     | Input Optional |           | Spin of initial state. Default Ji = -1.                                                                                                                               |
@@ -77,9 +77,13 @@ Batch process on multipole EM transitions for all calculations at once, includin
 | BEM(↑) | Output         | eg, e2fm2 | Transition strength. De-excitation. Require: Ji >= 0 && Jf <= 0                                                                                                       |
 | BWu(↑) | Output         | W.u.      | Weisskopf Estimation De-excitation. Require:Ji >= 0 && Jf <= 0                                                                                                        |
 
+**Note:** At least one of the following values must be provided: `t1/2`, `BEM`, or `BWu`.
+The program will automatically calculate the missing value(s) based on the input.  
+If only `t1/2` is provided, both `BEM` and `BWu` will be estimated using the Weisskopf approximation.
+
 #### ⚠ Important Input Formatting Warning ⚠
 
-When providing input values, **do not leave any empty spaces between true input values**. All columns before a valid input must be explicitly filled.  
+1. When providing input values, **do not leave any empty spaces between true input values**. All columns before a valid input must be explicitly filled.  
 
 ✅ **Correct Example:**  
 | #A  | Mult | Er   | t1/2 | br | Ei    | Ji  | Ef | Jf | BEM | BWu |
@@ -91,8 +95,9 @@ When providing input values, **do not leave any empty spaces between true input 
 |-----|------|------|------|----|----|----|----|----|----|----|
 | 20  | E2   | 1.633 | 0.73 | 1  | -  | 2  | -  | -  | -1  | -1  |
 
-Leaving any blank space before a true input value can cause errors in processing the data.
+Leaving any blank space before a true input value can cause errors in processing the data. </br>
+
 
 #### TODO
-Make t1/2 as optional. Sometimes people just need unit convert. t1/2 is not necessary.
+Convert python to c++.
 
