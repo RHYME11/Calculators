@@ -120,7 +120,9 @@ A small Python3 utility to calculate safe coulomb energy limit:
 Based on the attached formulas:
 $`
 D_{min} = 1.25\times(A_p^{1/3} + A_t^{1/3}) + 5.0\ \text{[fm]}
+`$
 
+$`
 E(\theta_{CM}) = 0.72\times\frac{Z_PZ_T}{D_{min}}\cdot\frac{A_P+A_T}{A_T}(1+\frac{1}{\sin(\frac{\theta_{CM}}{2})})\ \text{[MeV]}
 `$
 
