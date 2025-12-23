@@ -118,16 +118,13 @@ A small Python3 utility to calculate safe coulomb energy limit:
 - Safe beam energy \(E(\theta_{CM})\) (MeV) as a function of the center-of-mass angle
 
 Based on the attached formulas:
-\[
-D_{\min}=1.25\left(A_p^{1/3}+A_t^{1/3}\right)+5.0\ \text{[fm]}
-\]
-\[
-E(\theta_{CM})=0.72\cdot\frac{Z_pZ_t}{D_{\min}}\cdot\frac{A_p+A_t}{A_t}\cdot\left(1+\frac{1}{\sin(\theta_{CM}/2)}\right)\ \text{[MeV]}
-\]
+$`
+D_{min} = 1.25\times(A_p^{1/3} + A_t^{1/3}) + 5.0\ \text{[fm]}
 
+E(\theta_{CM}) = 0.72\times\frac{Z_PZ_T}{D_{min}}\cdot\frac{A_P+A_T}{A_T}(1+\frac{1}{\sin(\frac{\theta_{CM}}{2})})\ \text{[MeV]}
+`$
 
-
-
+---
 
 # TODO
 Convert python to c++.
