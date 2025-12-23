@@ -117,7 +117,7 @@ A small Python3 utility to calculate safe coulomb energy limit:
 - Minimum distance of closest approach \(D_{\min}\) (fm)
 - Safe beam energy \(E(\theta_{CM})\) (MeV) as a function of the center-of-mass angle
 
-Based on the attached formulas:
+Based on the attached formulas:</br>
 $`
 D_{min} = 1.25\times(A_p^{1/3} + A_t^{1/3}) + 5.0\ \text{[fm]}
 `$
