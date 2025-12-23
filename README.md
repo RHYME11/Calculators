@@ -97,7 +97,38 @@ If only `t1/2` is provided, both `BEM` and `BWu` will be estimated using the Wei
 
 Leaving any blank space before a true input value can cause errors in processing the data. </br>
 
+---
 
-#### TODO
+# prod\_calc.py
+This script calculates the **production rate (particles per second, pps)** for a beam–target reaction using basic nuclear/beam physics inputs.  
+It converts different beam intensity units to `pps` and computes the production rate using a simple analytical formula.
+- **Input:**</br>
+&nbsp;&nbsp;&nbsp;&nbsp; - Production cross section: mb </br>
+&nbsp;&nbsp;&nbsp;&nbsp; - Target thickness: mg/cm2</br>
+&nbsp;&nbsp;&nbsp;&nbsp; - Target mass: g/mol</br>
+&nbsp;&nbsp;&nbsp;&nbsp; - Beam intensity: <value><unit>. Units: pps, pnA, nA(require charge state)</br>
+- **Output:**</br>
+&nbsp;&nbsp;&nbsp;&nbsp; - Production rate: pps
+
+---
+
+# Safe\_Coulx\_Energy.py 
+A small Python3 utility to calculate safe coulomb energy limit:
+- Minimum distance of closest approach \(D_{\min}\) (fm)
+- Safe beam energy \(E(\theta_{CM})\) (MeV) as a function of the center-of-mass angle
+
+Based on the attached formulas:
+\[
+D_{\min}=1.25\left(A_p^{1/3}+A_t^{1/3}\right)+5.0\ \text{[fm]}
+\]
+\[
+E(\theta_{CM})=0.72\cdot\frac{Z_pZ_t}{D_{\min}}\cdot\frac{A_p+A_t}{A_t}\cdot\left(1+\frac{1}{\sin(\theta_{CM}/2)}\right)\ \text{[MeV]}
+\]
+
+
+
+
+
+# TODO
 Convert python to c++.
 
