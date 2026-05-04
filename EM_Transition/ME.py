@@ -2,6 +2,10 @@ def MEC(B, J):
   """Calculate the matrix element."""
   return (B * (2*J+1))**0.5
 
+def WuC(ME, J):
+  """Calculate the matrix element."""
+  return (ME**2)/(2*J+1)
+
 def get_positive_float(prompt):
   """Prompt user for a positive float input."""
   while True:
@@ -27,11 +31,28 @@ def get_valid_spin(prompt):
     except ValueError:
       print("Invalid input. Please enter a valid number.")
 
+def get_mode():
+  """Ask conversion direction."""
+  while True:
+    ans = input("Convert from B to ME? (y/n): ").strip().lower()
+    if ans in ["y", "yes"]:
+      return "B->ME"
+    elif ans in ["n", "no"]:
+      return "ME->B"
+    else:
+      print("Invalid input. Please enter y or n.")
+
 #=========== Input ============#
-B = get_positive_float("Enter transition strength: ")
+mode = get_mode()
 J = get_valid_spin("Enter spin of initial state: ")
 
 #=========== Output ============#
-ME = MEC(B, J)
-print(f"Reduced matrix element: {ME:.4f}")
+if mode == "B->ME":
+  B = get_positive_float("Enter transition strength (B): ")
+  ME = MEC(B, J)
+  print(f"Reduced matrix element: {ME:.4f}")
 
+else:
+  ME = get_positive_float("Enter reduced matrix element (ME): ")
+  B = WuC(ME, J)
+  print(f"Transition strength: {B:.4f}")
