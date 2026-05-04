@@ -6,7 +6,6 @@ import glob
 import math
 from B_unit_conv import conv_coeff
 
-
 # Valid positive number
 def check_positive(value, line_number, column_name):
   if value > 0:
@@ -44,16 +43,17 @@ def parse_line(line, line_number):
     else:
       br = 1 # default br = 1  
  
-    optional_fields = [float(parts[i]) if i < len(parts) else -1.0 for i in range(5, 11)] 
+    optional_fields = [float(parts[i]) if i < len(parts) else -1.0 for i in range(5, 12)] 
     
     # one of t1/2, BEM, BWu must exist
     BEM = optional_fields[4]
     BWu = optional_fields[5]
-    if hl<0 and BEM<0 and BWu<0:
-      print(f"Missing transition info (t1/2, BEM, BWu) in row {line_number}\n")
+    ME  = optional_fields[6]
+    if hl < 0 and BEM < 0 and BWu < 0 and ME < 0:
+      print(f"Missing transition info (t1/2, BEM, BWu, ME) in row {line_number}\n")
       sys.exit(1)
 
-    return [A, Mult, Er, hl, br] + optional_fields[:6]  
+    return [A, Mult, Er, hl, br] + optional_fields[:7]  
   
   except ValueError:
     print(f"Invalid input! Line#{line_number}: Incorrect data format.")
@@ -83,8 +83,10 @@ def BEM(values):
   elif values[10] > 0: # values[10] = BWu
     coeff = conv_coeff(values[1], values[0])
     coeff = 1./coeff # 1/coeff: convert Wu to e2fm2 
-    return values[10]/coeff 
-  else:
+    return values[10]/coeff
+  elif values[11]>0 and values[6]>=0: # values[11] = ME, values[6] = Ji
+    return (values[11]**2)/(2*values[6]+1)
+  elif values[3]>0:
     transition_type = values[1]
     E_gamma = values[2]
     Tp = values[3]/values[4] # Tp = T/br
@@ -101,8 +103,9 @@ def BEM(values):
       "M3": lambda E, Tp: 0.110 / (E**7 * Tp) * 1e12,   # ps conversion from s
       "M4": lambda E, Tp: (0.370 * 10**6) / (E**9 * Tp) * 1e12,  # ps conversion from s
     }
-     
     return formulas[transition_type](E_gamma, Tp)
+  else:
+    return -1;
 
 # Element#10: BWu Calculation
 # 1st: BWu exists, keep the original value
@@ -121,14 +124,17 @@ def BWu(values):
 
 # Element#11: ME (matrix element) Calculation
 def ME(values):
-  BWu = values[9]
+  if values[11]>0: # values[11] = ME
+    return values[11]
+  BEM = values[9]
   Ji = values[6]
-  if BWu > 0 and Ji >=0:
-    return (BWu*(2*Ji+1))**0.5
+  if BEM > 0 and Ji >=0:
+    return (BEM*(2*Ji+1))**0.5
   else:
     return -1
 
 # Element#12: tsp Calculation
+# if B or ME is known, we should calcualte tsp with them first
 def sphl(values): # in unit ps^-1
   transition_type = values[1]
   A = values[0]
@@ -146,23 +152,21 @@ def sphl(values): # in unit ps^-1
   uN2 = 1.5922e-38 # unit: keV cm3
   R = 1.2e-13*(A**(1/3)) # unit: cm
   E_gamma = E_gamma*1e3 # unit: MeV -> keV
- 
-  if EM_type == 'E':
-    tsp = 0.693*L*(math.prod(range(2*L+1, 0, -2))**2)*hbar/(2*(L+1)*e2*(R**(2*L)))*(((3+L)/3)**2)*((hbarc/E_gamma)**(2*L+1))
-  if EM_type == 'M':
-    tsp = 0.693*L*(math.prod(range(2*L+1, 0, -2))**2)*hbar/(80*(L+1)*uN2*(R**(2*L-2)))*(((3+L)/3)**2)*((hbarc/E_gamma)**(2*L+1))
- 
- 
-  return tsp*1e12 # unit in ps;
-
-# Element#14: MEdex (matrix element) for de-excitation Calculation
-def MEdex(values):
-  BWu = values[13]
-  Jf = values[8]
-  if BWu > 0 and Jf >=0:
-    return (BWu*(2*Jf+1))**0.5
+  b = 1e-24 # unit cm2
+  if values[9]>0: # BEM is known
+    if EM_type == 'E':
+      BE = values[9]/100**L
+      TSP = (8*3.14*(L+1)*e2*(b**L))/(L*(math.prod(range(2*L+1, 0, -2))**2)*hbar)*(E_gamma/hbarc)**(2*L+1)*BE
+    if EM_type == 'M':
+      BE = values[9]/100**(L-1)
+      TSP = (8*3.14*(L+1)*uN2*(b**(L-1)))/(L*(math.prod(range(2*L+1, 0, -2))**2)*hbar)*(E_gamma/hbarc)**(2*L+1)*BE
+    return (1./TSP )*1e12*0.693 # unit in ps
   else:
-    return -1
+    if EM_type == 'E':
+      tsp = 0.693*L*(math.prod(range(2*L+1, 0, -2))**2)*hbar/(2*(L+1)*e2*(R**(2*L)))*(((3+L)/3)**2)*((hbarc/E_gamma)**(2*L+1))
+    if EM_type == 'M':
+      tsp = 0.693*L*(math.prod(range(2*L+1, 0, -2))**2)*hbar/(80*(L+1)*uN2*(R**(2*L-2)))*(((3+L)/3)**2)*((hbarc/E_gamma)**(2*L+1))
+    return tsp*1e12 # unit in ps;
 
 # Element#13: BEM for de-excitation Calculation
 def BEM_dex(values):
@@ -210,15 +214,14 @@ def write_to_file(data_mat, input_file):
     file.write("# All energies are in MeV.\n")
     file.write("# All times in ps.\n")
     file.write("# ME = matrix element in unit, like efm.\n")
-    file.write("# tsp = single particle half-life in ps by Weisskopf estimation.\n")
+    file.write("# tsp = single particle half-life in ps (default ICC = 0. tsp = tsp/(1+ICC)).\n")
     file.write("# BEM(↑) = B in unit e2fm2 for de-excitation.\n")
     file.write("# BWu(↑) = B in W.u. for de-excitation.\n")
-    file.write("# ME(↑) = matrix element for de-excitation.\n")
     file.write("# ========================================================================== #\n\n\n")
     
-    header_format = "{:<7} {:<8} {:<10} {:<10} {:<8} {:<10} {:<6} {:<6} {:<6} {:<12} {:<12} {:<12} {:<12} {:<12} {:<12} {:<12}\n"
+    header_format = "{:<7} {:<8} {:<10} {:<10} {:<8} {:<10} {:<6} {:<6} {:<6} {:<12} {:<12} {:<12} {:<12} {:<12} {:<12}\n"
 
-    row_format = "{:<7} {:<8} {:<10.4f} {:<10.4f} {:<8.4f} {:<10.4f} {:<6} {:<6} {:<6} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f}\n"
+    row_format = "{:<7} {:<8} {:<10.4f} {:<10.4f} {:<8.4f} {:<10.4f} {:<6} {:<6} {:<6} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f} {:<12.4f}\n"
     
 
     file.write(header_format.format(
@@ -228,7 +231,7 @@ def write_to_file(data_mat, input_file):
     for row in data_mat:
       file.write(row_format.format(
         int(row[0]), row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8],
-        row[9], row[10], row[11], row[12], row[13], row[14], row[15]
+        row[9], row[10], row[11], row[12], row[13], row[14]
       ))
 
   print(f"Data written to '{output_file}' successfully!")
@@ -247,11 +250,10 @@ def main():
   for row in data_mat:
     row[9]  = BEM(row)
     row[10] = BWu(row)
-    row.append(ME(row))
+    row[11] = ME(row)
     row.append(sphl(row))
     row.append(BEM_dex(row))   
     row.append(BWu_dex(row))   
-    row.append(MEdex(row))   
   
   write_to_file(data_mat,input_file)
 
